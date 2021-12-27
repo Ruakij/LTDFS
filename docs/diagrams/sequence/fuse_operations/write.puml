@@ -1,0 +1,39 @@
+@startuml
+autonumber
+hide footbox
+
+footer "LTDFS | Ruakij"
+
+title "Write to opened file"
+
+participant Client
+control SiteA
+boundary SiteB
+boundary "Other Sites" as Others
+
+Client -> SiteA ++ : Section-Data
+SiteA -> SiteA : Check owner
+alt SiteA is owner
+
+    SiteA -> SiteA ++ : Save Data
+    SiteA --> SiteA -- : Done
+
+    SiteA ->> Others : Section changed
+
+else SiteB is owner
+
+    SiteA -> SiteA ++ : Save in cache
+    note right : Write-Back Cache
+
+    SiteA ->> SiteB ++ : Write Section-Data
+
+        SiteB -> SiteB ++ : Save Data
+        SiteB--
+        SiteB ->> Others -- : Section changed
+
+    SiteA --> SiteA -- : Done
+
+end
+SiteA --> Client -- : Done
+
+@enduml

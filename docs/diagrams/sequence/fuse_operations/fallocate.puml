@@ -1,0 +1,40 @@
+@startuml
+autonumber
+hide footbox
+
+footer "LTDFS | Ruakij"
+
+title "Allocate space for opened file"
+
+participant Client
+control SiteA
+boundary SiteB
+boundary "Other Sites" as Others
+
+Client -> SiteA ++ : fallocate
+SiteA -> SiteA : Check owner
+alt SiteA is owner
+
+    SiteA -> SiteA : Allocate space
+    alt No space left
+
+        SiteA --> Client : No space left\non device
+
+    end
+
+    SiteA ->> Others : Section changed
+
+else SiteB is owner
+
+    SiteA -> SiteB ++ : Allocate space
+
+        SiteB -> SiteB : Allocate space
+        SiteB ->> Others : Section changed
+        SiteB --> SiteA -- : Done
+
+    SiteA ->> SiteA : Update cache
+
+end
+SiteA --> Client -- : Done
+
+@enduml

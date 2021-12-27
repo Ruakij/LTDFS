@@ -1,0 +1,33 @@
+@startuml
+autonumber
+hide footbox
+
+footer "LTDFS | Ruakij"
+
+title "Read from opened file"
+
+participant Client
+control SiteA
+boundary SiteB
+
+
+Client -> SiteA ++ : Read Section
+    
+    SiteA -> SiteA : Check availablility
+    alt Not locally available
+
+        SiteA -> SiteB ++ : Read Section
+        SiteB --> SiteA -- : Section-Data
+        note right
+        Section-Data is
+        being  streamed
+        end note
+
+        SiteA ->> SiteA ++ : Save in cache
+        SiteA --
+
+    end
+
+SiteA --> Client -- : Section-Data
+
+@enduml

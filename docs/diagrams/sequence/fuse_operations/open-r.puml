@@ -1,0 +1,19 @@
+@startuml
+autonumber
+hide footbox
+
+footer "LTDFS | Ruakij"
+
+title "Open Read"
+
+participant Client
+control SiteA
+
+
+Client -> SiteA ++ : Open [r]
+
+    SiteA -> SiteA : Check availablility
+
+SiteA --> Client -- : File opened
+
+@enduml

@@ -1,0 +1,25 @@
+@startuml
+autonumber
+hide footbox
+
+footer "LTDFS | Ruakij"
+
+header "Every few seconds"
+title "Heartbeat"
+
+control SiteA
+boundary "Other Sites" as Others
+
+SiteA ++
+SiteA -> SiteA : Get latest changes\nin local cache
+note right
+Changes since
+last heartbeat
+end note
+
+SiteA ->> Others ++ : Distribute changed\nlocal-cache-indexes
+SiteA--
+
+Others -> Others : Apply changes to\navailability-index
+
+@enduml

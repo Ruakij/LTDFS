@@ -1,0 +1,54 @@
+@startuml
+autonumber
+hide footbox
+
+footer "LTDFS | Ruakij"
+
+header "Not Local\nNot Owner"
+title "Open Read&Write"
+
+participant Client
+control SiteA
+boundary SiteB
+boundary "Other Sites" as Others
+
+
+Client -> SiteA ++ : Open [rw]
+    
+    SiteA -> SiteA : Check owner
+    alt SiteB is owner
+
+        SiteA -> SiteA : Check availablility
+        alt File is not locally available
+
+            SiteA -> SiteB ++ : Lock file
+
+            SiteB -> SiteB : Lock file
+            alt Already locked
+
+                SiteB --> SiteA : File is locked
+                SiteA --> Client : File is locked
+
+            else Locked
+
+                SiteB ->> Others : File locked
+                note left
+                    Distribute Info
+                    about Lock
+                end note
+
+                SiteB --> SiteA -- : Ready
+                SiteA --> Client -- : File opened
+
+                note right 
+                    When reading or writing,
+                    data will now be streamed.
+                    > See read.puml for more Info
+                end note
+            end
+        
+        end
+
+    end
+
+@enduml

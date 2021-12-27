@@ -1,0 +1,22 @@
+@startuml
+autonumber
+hide footbox
+
+footer "LTDFS | Ruakij"
+
+title "Initialize FS"
+
+control SiteA
+boundary "Other Sites" as Others
+
+SiteA ++
+SiteA -> Others ++ : TCP-Connect
+
+SiteA -> Others : Get Indexes
+Others --> SiteA : Indexes
+note right
+Indexes without
+entries from SiteA
+end note
+
+@enduml

@@ -1,0 +1,44 @@
+@startuml
+autonumber
+hide footbox
+
+footer "LTDFS | Ruakij"
+
+header "Local\nOwner"
+title "Open Read&Write"
+
+participant Client
+control SiteA
+boundary "Other Sites" as Others
+
+
+Client -> SiteA ++ : Open [rw]
+    
+    SiteA -> SiteA : Check owner
+    alt Client is owner
+
+        SiteA -> SiteA : Lock file
+        alt Already locked
+
+            SiteA --> Client : File is locked
+
+        else Locked
+
+            SiteA ->> Others : File locked
+            note left
+                Distribute Info
+                about Lock
+            end note
+
+        end
+
+    end
+
+    SiteA -> SiteA : Check availablility
+    alt Locally available
+
+        SiteA --> Client -- : File opened
+
+    end
+
+@enduml
