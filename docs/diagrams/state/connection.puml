@@ -1,0 +1,19 @@
+@startuml
+footer "LTDFS | Ruakij"
+
+header ""
+title "Connection"
+
+state Idle
+state Management
+state Transfer
+
+[*] -> Management : First connection
+Management -> [*] : Filesystem closes
+[*] --> Idle
+Idle -> Transfer : File-Requests
+Transfer -> Idle : Request complete
+Idle --> [*] : No longer needed
+
+
+@enduml
