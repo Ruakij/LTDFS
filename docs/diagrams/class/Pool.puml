@@ -1,0 +1,67 @@
+@startuml
+footer "LTDFS | Ruakij"
+
+header ""
+title "Pool-System with Lifetime"
+
+enum ItemState {
+    WAITING
+    READY
+    TAKEN
+}
+
+class "PoolItem<T>" as PoolItem_T {
+    # item : T*
+    # aTime : std::chrono::time_point
+    # state : ItemState
+    --
+    + PoolItem(T* item, ItemState state)
+}
+PoolItem_T "*" -> "1" ItemState : <<has>>
+
+class "Pool<T>" as Pool_T {
+    # min : uint
+    # max : uint
+    # idleLifetime : uint
+    ..
+    # {field} create : T*(*)()
+    # {field} isReady : boolean(*)(T*)
+    # {field} destroy : void(*)(T*)
+    ..
+    # items : Array<T*>
+    --
+    + Pool(uint min, uint max, uint32_t lifetime,
+    T*(*create)(),
+    boolean(*isReady)(T*) = nullptr,
+    void(*destroy)(T*) = nullptr)
+    ..
+    + get() : T*
+    + return(T*)
+}
+note right of Pool_T::Pool
+    isReady: Checks if Object is ready
+      ItemState defaults to Ready if unset
+
+    destroy: Destroy Object
+      defaults to delete/deconstructor
+end note
+
+Pool_T "1" --> "*" PoolItem_T : <<has>>
+
+class "PoolManager<T>" as PoolManager_T {
+    # pools : Array<Pool<PoolItem<T>>>
+    # thread : pthread_t
+    --
+    + PoolManager(Array<Pool<PoolItem<T>>> pools)
+    + PoolManager(Pool<PoolItem<T>> pool)
+    ..
+    + Start()
+    + Stop()
+}
+note left of PoolItem_T::aTime
+AccessTime
+end note
+
+PoolManager_T "1" --> "*" Pool_T : <<manages>>
+
+@enduml
